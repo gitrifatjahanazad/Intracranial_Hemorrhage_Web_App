@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, request
 from flask import send_from_directory
-import jsonify
+from flask import jsonify
 import pandas as pd
 import numpy as np
 import os
@@ -35,10 +35,13 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 UPLOAD_FOLDER = 'uploads'
 STATIC_FOLDER = 'static'
 
-tmp = torch.load('models/fold0_ep3.pt')
+tmp = torch.load('models/fold0_ep3.pt', map_location={'cuda:0': 'cpu'})
+
 
 model = get_model('se_resnext101_32x4d')
-model.load_state_dict(tmp['model'])
+tmp['last_linear.weight'] = tmp['last_linear.weight'][0:6,:]
+tmp['last_linear.bias'] = tmp['last_linear.bias'][0:6]
+model.load_state_dict(tmp)
 
 criterion = nn.BCEWithLogitsLoss()
 optim = Adam(model.parameters(), lr=1e-3)
@@ -107,3 +110,4 @@ if __name__ == '__main__':
     app.debug = True
     app.run(debug=True, host= '0.0.0.0', port=9999)
     app.debug = True
+

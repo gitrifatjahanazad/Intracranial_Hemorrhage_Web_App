@@ -67,7 +67,7 @@ def pred(path, model, device = 'cuda'):
     ds = TestDataset(window_policy=2, path = [path])
     dl = DataLoader(ds)
     img = next(iter(dl))
-    img = img.type(torch.FloatTensor).cuda()
+    img = img.type(torch.FloatTensor)
     model.eval()
     pred = model(img)
     grad_cam_gen(model, img, path)
@@ -80,7 +80,7 @@ def grad_cam_gen(model, img, path, apex = False, device = 'cuda'):
     configs = [dict(model_type='seresnext', arch=model, layer_name='layer4_2_se_module_fc2')]
     # with amp.disable_casts():
     for config in configs:
-        config['arch'].to(device).eval()
+        config['arch'].eval()
 
     cams = [
     [cls.from_config(**config) for cls in (GradCAM, GradCAMpp)]
@@ -99,3 +99,4 @@ def grad_cam_gen(model, img, path, apex = False, device = 'cuda'):
             path = path.split('/')[-1].split('.')[0]
             plt.imsave('uploads/{}_grad_cam_{}.png'.format(path, indices[cls_idx]), np.transpose(result_pp, (1, 0, 2)))
             plt.show()  
+
