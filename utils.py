@@ -137,7 +137,7 @@ def get_model(model_name, n_output=6, pretrained='imagenet'):
         model.last_linear.in_features,
         n_output,
     )
-    return model.cuda()
+    return model
 
 def window_image(img, window_center, window_width, intercept, slope):
     """
